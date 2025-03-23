@@ -1,0 +1,124 @@
+version: "3.7"
+services:
+  next:
+    build:
+      args:
+        - NODE_VER=22.12.0
+      context: .
+      dockerfile: ./.devcontainer/frontend/Dockerfile
+    tty: true
+    volumes:
+      - type: bind
+        source: next-app
+        target: /home/node/app/next-app
+      - type: volume
+        source: node_modules
+        target: /home/node/app/next-app/node_modules
+  go-app:
+    build:
+      args:
+        - GO_VER=1.24
+      context: .
+      dockerfile: ./.devcontainer/backend/Dockerfile
+    tty: true
+    stdin_open: true
+    command: /bin/bash
+    volumes:
+      - type: bind
+        source: go-app
+        target: /workspace
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.3
+    container_name: keycloak
+    tty: true
+    stdin_open: true
+    ports:
+      - "18080:8080" # 8080は被りやすいので別のポートに設定
+    volumes:
+      - type: bind
+        source: ./docker/keycloak
+        target: /opt/keycloak/data
+    environment:
+      KEYCLOAK_ADMIN: admin # 管理ユーザーIDを設定
+      KEYCLOAK_ADMIN_PASSWORD: passwd # 管理ユーザーのパスワードを設定
+    command:
+      - start-dev # 開発モードで起動
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - type: volume
+        source: db-store
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: ./docker/postgres/script
+        target: /docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sample
+      TZ: Asia/Tokyo
+  cauchbase:
+    image: couchbase/server:7.6.5
+    ports:
+      - 8091:8091
+      - 11210:11210
+    volumes:
+      # bindマウントでも対応可能
+      - type: volume
+        source: cauchbase-store
+        target: /opt/couchbase/var
+  pgadmin4:
+    image: dpage/pgadmin4:9.1.0
+    ports:
+      - 8080:80
+    volumes:
+      - type: volume
+        source: pgadmin-data
+        target: /var/lib/pgadmin
+      - type: bind
+        source: ./docker/pgadmin4/config/servers.json
+        target: /pgadmin4/servers.json
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    depends_on:
+      - postgres
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=adminpass
+    ports:
+      - "9000:9000" # API用ポート
+      - "9001:9001" # 管理コンソール用ポート
+    volumes:
+      - type: volume
+        source: minio-store
+        target: /data
+      - type: bind
+        source: ./docker/minio/init_data
+        target: /init_data
+  mc:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 admin adminpass;
+      mc mb myminio/sample;
+      mc cp /init_data/* myminio/sample;
+      "
+
+volumes:
+  node_modules:
+  db-store:
+  cauchbase-store:
+  pgadmin-data:
+  minio-store:
