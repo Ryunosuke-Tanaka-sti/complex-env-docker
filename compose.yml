@@ -18,9 +18,11 @@ services:
       args:
         - GO_VER=1.24
       context: .
-      dockerfile: ./.devcontainer/backend/Dockerfile
+      dockerfile: ./.devcontainer/api/Dockerfile
     tty: true
     stdin_open: true
+    ports:
+      - "8080:8080"
     command: /bin/bash
     volumes:
       - type: bind
@@ -28,7 +30,6 @@ services:
         target: /workspace
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.3
-    container_name: keycloak
     tty: true
     stdin_open: true
     ports:
@@ -44,7 +45,6 @@ services:
       - start-dev # 開発モードで起動
   postgres:
     image: postgres:14
-    container_name: postgres
     ports:
       - 5432:5432
     volumes:
@@ -52,7 +52,7 @@ services:
         source: db-store
         target: /var/lib/postgresql/data
       - type: bind
-        source: ./docker/postgres/script
+        source: ./docker/postgres/init
         target: /docker-entrypoint-initdb.d
     environment:
       POSTGRES_USER: user
@@ -72,7 +72,7 @@ services:
   pgadmin4:
     image: dpage/pgadmin4:9.1.0
     ports:
-      - 8080:80
+      - 8081:80
     volumes:
       - type: volume
         source: pgadmin-data
@@ -89,7 +89,6 @@ services:
       - postgres
   minio:
     image: minio/minio:latest
-    container_name: minio
     command: server /data --console-address ":9001"
     environment:
       - MINIO_ROOT_USER=admin
@@ -114,6 +113,52 @@ services:
       mc mb myminio/sample;
       mc cp /init_data/* myminio/sample;
       "
+  prefect:
+    build:
+      context: .
+      dockerfile: ./.devcontainer/batch/Dockerfile
+    volumes:
+      - type: bind
+        source: prefect
+        target: /home/pyuser/python
+    restart: always
+    tty: true
+  kong-database:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kongpass
+    ports:
+      - "5433:5432"
+    volumes:
+      - type: volume
+        source: kong-store
+        target: /var/lib/postgresql/data
+  kong:
+    image: kong:latest
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kongpass
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    depends_on:
+      - kong-database
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+
+  opa:
+    image: openpolicyagent/opa:latest
+    ports:
+      - "8181:8181"
+    tty: true
+
 
 volumes:
   node_modules:
@@ -122,3 +167,4 @@ volumes:
   cauchbase-store:
   pgadmin-data:
   minio-store:
+  kong-store:
