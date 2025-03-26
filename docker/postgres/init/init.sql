@@ -1,8 +1,11 @@
--- データベース作成
+
 CREATE DATABASE dummy_db;
 
--- 使用するデータベースを指定
+-- データベースに接続
 \c dummy_db;
+
+-- テーブルが既に存在する場合に備えて削除
+DROP TABLE IF EXISTS users;
 
 -- テーブル作成
 CREATE TABLE users (
@@ -12,7 +15,7 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 初期データ挿入
+-- データ挿入
 INSERT INTO users (name, email) VALUES
     ('Alice', 'alice@example.com'),
     ('Bob', 'bob@example.com'),
