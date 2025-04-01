@@ -1,8 +1,7 @@
-ARG NODE_VER
+ARG NODE_VER="latest"
 FROM node:${NODE_VER}
 
-RUN npm install -g npm@11.0.0
-RUN npm install -g @azure/static-web-apps-cli
+RUN npm install -g npm
 
 USER node
 

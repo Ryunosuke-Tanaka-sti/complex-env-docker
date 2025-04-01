@@ -4,7 +4,7 @@
         "../../compose.yml"
     ],
     "workspaceFolder": "/home/pyuser/python",
-    "service": "app",
+    "service": "prefect",
     "features": {
         "ghcr.io/christophermacgown/devcontainer-features/direnv:1": {},
         "ghcr.io/devcontainers/features/git": {}

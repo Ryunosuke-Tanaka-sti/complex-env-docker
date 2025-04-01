@@ -1,4 +1,5 @@
-FROM python:3.12.8-bullseye
+ARG PYTHON_VER="latest"
+FROM python:${PYTHON_VER}
 
 # パッケージ更新
 RUN apt-get update
@@ -11,9 +12,9 @@ ARG GID=1000
 ENV WORKDIR=/home/pyuser/python
 
 # タイムゾーン設定
-ENV TZ Asia/Tokyo
+ENV TZ=Asia/Tokyo
 # import時に指定ディレクトリからにするためラク
-ENV PYTHONPATH $WORKDIR
+ENV PYTHONPATH=$WORKDIR
 
 # ユーザー追加
 RUN groupadd -g $GID $GROUPNAME && \
@@ -24,7 +25,7 @@ RUN mkdir -p $WORKDIR
 RUN chown -R $UID:$GID $WORKDIR
 
 # ユーザーのbinaryディレクトリをパスに追加
-ENV PATH /home/$USERNAME/.local/bin:$PATH
+ENV PATH=/home/$USERNAME/.local/bin:$PATH
 
 # ユーザー切り替え
 USER $USERNAME
