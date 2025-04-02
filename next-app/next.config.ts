@@ -5,14 +5,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
   }
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: "/api/",
-  //       destination: "http://localhost:8080/api/",
-  //     },
-  //   ];
-  // },
 };
 
 export default nextConfig;
