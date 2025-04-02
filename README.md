@@ -15,6 +15,8 @@
 | kong              | APIゲートウェイ                        | 8000 (プロキシ), 8001 (管理) | 依存サービス: `kong-database` (PostgreSQL) |
 | opa               | ポリシーエンジン                       | 8181                     | -                                      |
 
+
+Docker起動
 ```bash
 # 事前起動
 docker compose up -d kong-database
@@ -25,6 +27,24 @@ docker compose run --rm kong kong migrations bootstrap
 # 全体起動
 docker compose up -d
 ```
+
+OPA登録
+
+```rego
+package example
+
+default allow = false
+
+allow {
+    input.method == "GET"
+    input.path == "/api/user"
+}
+```
+
+```bash
+curl -X PUT --data-binary @example.rego http://localhost:8181/v1/policies/example
+```
+
 
 ### 1. Next.js アプリケーション (`next`)
 - 概要: フロントエンドアプリケーション。

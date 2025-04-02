@@ -1,0 +1,207 @@
+{
+    "result": [
+        {
+            "id": "example",
+            "raw": "package example\nimport rego.v1\n\ndefault allow = false\n\nallow if{\n    input.method == \"GET\"\n    input.path == \"/api/user\"\n}\n\nallow if{\n    input.method == \"GET\"\n    input.path == \"/api/policy\"\n}\n",
+            "ast": {
+                "package": {
+                    "path": [
+                        {
+                            "type": "var",
+                            "value": "data"
+                        },
+                        {
+                            "type": "string",
+                            "value": "example"
+                        }
+                    ]
+                },
+                "rules": [
+                    {
+                        "body": [
+                            {
+                                "index": 0,
+                                "terms": {
+                                    "type": "boolean",
+                                    "value": true
+                                }
+                            }
+                        ],
+                        "default": true,
+                        "head": {
+                            "name": "allow",
+                            "value": {
+                                "type": "boolean",
+                                "value": false
+                            },
+                            "ref": [
+                                {
+                                    "type": "var",
+                                    "value": "allow"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "body": [
+                            {
+                                "index": 0,
+                                "terms": [
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "eq"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "input"
+                                            },
+                                            {
+                                                "type": "string",
+                                                "value": "method"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "string",
+                                        "value": "GET"
+                                    }
+                                ]
+                            },
+                            {
+                                "index": 1,
+                                "terms": [
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "eq"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "input"
+                                            },
+                                            {
+                                                "type": "string",
+                                                "value": "path"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "string",
+                                        "value": "/api/user"
+                                    }
+                                ]
+                            }
+                        ],
+                        "head": {
+                            "name": "allow",
+                            "value": {
+                                "type": "boolean",
+                                "value": true
+                            },
+                            "ref": [
+                                {
+                                    "type": "var",
+                                    "value": "allow"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "body": [
+                            {
+                                "index": 0,
+                                "terms": [
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "eq"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "input"
+                                            },
+                                            {
+                                                "type": "string",
+                                                "value": "method"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "string",
+                                        "value": "GET"
+                                    }
+                                ]
+                            },
+                            {
+                                "index": 1,
+                                "terms": [
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "eq"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ref",
+                                        "value": [
+                                            {
+                                                "type": "var",
+                                                "value": "input"
+                                            },
+                                            {
+                                                "type": "string",
+                                                "value": "path"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "string",
+                                        "value": "/api/policy"
+                                    }
+                                ]
+                            }
+                        ],
+                        "head": {
+                            "name": "allow",
+                            "value": {
+                                "type": "boolean",
+                                "value": true
+                            },
+                            "ref": [
+                                {
+                                    "type": "var",
+                                    "value": "allow"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

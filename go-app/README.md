@@ -66,6 +66,20 @@ CREATE TABLE users (
 );
 ```
 
+### OPA Policy登録
+
+```bash
+# OPAの起動確認
+curl http://opa:8181/health
+
+# example.regoの作成
+
+# Policy登録
+curl -X PUT --data-binary @example.rego http://opa:8181/v1/policies/example
+
+# 登録済みポリシーの確認
+curl http://opa:8181/v1/policies
+```
 
 ## 拡張機能
 - https://zenn.dev/tomi/articles/2020-10-22-go-docker

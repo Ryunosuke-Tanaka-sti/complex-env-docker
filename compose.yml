@@ -160,8 +160,12 @@ services:
     image: openpolicyagent/opa:${OPA_VERSION}
     ports:
       - "8181:8181"
-    tty: true
-
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "--log-format=json-pretty"
+      - "--set=decision_logs.console=true"
 volumes:
   node_modules:
   keycloak-store:

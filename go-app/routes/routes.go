@@ -32,6 +32,8 @@ func SetupRouter() *gin.Engine {
 		api.GET("/user", controllers.GetItems)
 		api.POST("/user", controllers.CreateItem)
 		// PUTとDELETEのルートも追加
+
+		api.GET("/policy", controllers.ListPolicies)
 	}
 
 	return r
